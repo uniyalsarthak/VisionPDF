@@ -1,0 +1,29 @@
+workspace/
+extracted_images/
+__pycache__/
+.cache/
+*.pdf
+*.png
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated files
+workspace/
+extracted_images/
+
+# Cache
+.huggingface/
+hf_cache/
+
+# Docs output
+*.docx
