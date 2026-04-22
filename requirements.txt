@@ -1,0 +1,10 @@
+streamlit
+torch
+torchvision
+transformers
+sentence-transformers
+pillow
+pytesseract
+scikit-learn
+docling
+pymupdf
