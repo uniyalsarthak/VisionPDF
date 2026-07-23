@@ -11,24 +11,20 @@ from docx import Document
 from docx.shared import Inches
 
 
-# =========================================================
-# GLOBAL DOCLING CONVERTER (INITIALIZED ONLY ONCE)
-# =========================================================
 pipeline_options = PdfPipelineOptions()
 pipeline_options.images_scale = 2.5
 pipeline_options.generate_picture_images = True
 pipeline_options.generate_page_images = False
 pipeline_options.do_ocr = False
 
+# GLOBAL DOCLING CONVERTER 
 CONVERTER = DocumentConverter(
     format_options={
         InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
     }
 )
 
-# =========================================================
-# FAST PAGE DETECTION (skip non-visual pages)
-# =========================================================
+# FAST PAGE DETECTION 
 def detect_pages_with_visuals(pdf_path):
     pdf = fitz.open(pdf_path)
     pages = []
@@ -45,9 +41,7 @@ def detect_pages_with_visuals(pdf_path):
     return pages
 
 
-# =========================================================
-# CREATE REDUCED PDF (ONLY IMPORTANT PAGES)
-# =========================================================
+# CREATE REDUCED PDF 
 def create_reduced_pdf(src_pdf, pages, out_pdf):
     src = fitz.open(src_pdf)
     dst = fitz.open()
@@ -60,9 +54,7 @@ def create_reduced_pdf(src_pdf, pages, out_pdf):
     dst.close()
 
 
-# =========================================================
 # CAPTION DETECTION HEURISTIC
-# =========================================================
 import re
 
 def looks_like_caption(text):
@@ -70,9 +62,7 @@ def looks_like_caption(text):
     return re.match(r"^(fig|figure)\s*\.?\s*\d+", t) is not None
 
 
-# =========================================================
-# MAIN EXTRACTION FUNCTION (FAST)
-# =========================================================
+# MAIN EXTRACTION FUNCTION
 def extract_figures_with_captions(pdf_path):
 
     pdf_bytes = pdf_path.read_bytes()
@@ -127,9 +117,7 @@ def extract_figures_with_captions(pdf_path):
     return out_dir, results
 
 
-# =========================================================
 # WORD EXPORT
-# =========================================================
 def create_word_file(results, output_path, title="Extracted Figures"):
 
     doc = Document()
