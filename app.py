@@ -1,5 +1,6 @@
 
 from core.embedding import encode_image
+from core.embedding import encode_images_batch
 import os
 os.environ["HF_HUB_DISABLE_SYMLINKS"] = "1"
 os.environ["HF_HOME"] = "C:/hf_cache"
@@ -36,9 +37,7 @@ if uploaded_zip:
     pdf_files = list(zip_dir.rglob("*.pdf"))
     st.success(f"Found {len(pdf_files)} PDFs")
 
-    # -----------------------------
     # Extraction Phase
-    # -----------------------------
     for pdf in pdf_files:
         st.subheader(f"Processing: {pdf.name}")
 
@@ -47,22 +46,32 @@ if uploaded_zip:
         if results:
             pdf_results[pdf.name] = results
 
-            for r in results:
+            # for r in results:
 
-                # compute embedding ONCE (speed optimization)
-                image_vec = encode_image(r["img_path"]).cpu().numpy()
+            #     # compute embedding ONCE (speed optimization)
+            #     image_vec = encode_image(r["img_path"]).cpu().numpy()
 
+            #     all_images.append({
+            #         "path": r["img_path"],
+            #         "caption": r["caption"],
+            #         "pdf": pdf.name,
+            #         "vector": image_vec
+            #     })
+
+            image_paths = [r["img_path"] for r in results]
+
+            embeddings = encode_images_batch(image_paths)
+
+            for r, emb in zip(results, embeddings):
                 all_images.append({
                     "path": r["img_path"],
                     "caption": r["caption"],
                     "pdf": pdf.name,
-                    "vector": image_vec
+                    "vector": emb
                 })
 
 
-    # -----------------------------
-    # OPTION 1: Download ALL images per PDF
-    # -----------------------------
+    # Download ALL images per PDF
     if pdf_results:
         st.divider()
         st.subheader("Download All Extracted Images")
@@ -88,9 +97,7 @@ if uploaded_zip:
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
 
-    # -----------------------------
     # Semantic Search Section
-    # -----------------------------
     if all_images:
         st.divider()
         st.subheader("Searching")
@@ -108,9 +115,7 @@ if uploaded_zip:
                         use_container_width=True
                     )
 
-                # -----------------------------
-                # OPTION 2: Download Search Results
-                # -----------------------------
+                # Download Search Results
                 st.divider()
 
                 search_word_path = Path("workspace") / "search_results.docx"
